@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+#root {
+  box-sizing: border-box;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  background-color: lightgrey;
+  border-radius: 8px;
+}
