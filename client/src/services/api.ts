@@ -4,6 +4,7 @@ export async function login(email: string, password: string) {
   const res = await fetch(`${API_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify({ email, password }),
   });
 
@@ -15,11 +16,12 @@ export async function login(email: string, password: string) {
   return data;
 }
 
-export async function register(name: string, email: string, password: string) {
+export async function register(email: string, password: string) {
   const res = await fetch(`${API_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ name, email, password }),
+    credentials: "include",
+    body: JSON.stringify({ email, password }),
   });
 
   const data = await res.json();
@@ -28,4 +30,21 @@ export async function register(name: string, email: string, password: string) {
 
   localStorage.setItem("token", data.token);
   return data;
+}
+
+export async function getCurrentUser() {
+  const res = await fetch(`${API_URL}/auth/me`, {
+    credentials: "include",
+  });
+
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.user;
+}
+
+export async function logout() {
+  await fetch(`${API_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
 }

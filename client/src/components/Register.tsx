@@ -1,16 +1,28 @@
 import { useState } from "react";
+import { register } from "../services/api";
 
 interface LoginProps {
-  onLogin?: (email: string, password: string) => void;
+  onSuccess?: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onLogin = () => {} }) => {
+export default function Register({ onSuccess }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
-    if (email && password) {
-      onLogin(email, password);
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      await register(email, password);
+      console.log("Registration successful!");
+      // TODO: Redirect or update UI
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -18,6 +30,8 @@ const Login: React.FC<LoginProps> = ({ onLogin = () => {} }) => {
     <div className="flex items-center justify-center text-left">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Register</h2>
+
+        {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">{error}</div>}
 
         <div className="space-y-4">
           <div>
@@ -44,14 +58,13 @@ const Login: React.FC<LoginProps> = ({ onLogin = () => {} }) => {
 
           <button
             onClick={handleSubmit}
-            className="w-full bg-blue-400 text-white py-2 rounded-md hover:bg-blue-700 font-medium"
+            disabled={loading}
+            className="w-full !bg-blue-600 text-white py-2 rounded-md hover:!bg-blue-700 font-medium disabled:opacity-50"
           >
-            Register
+            {loading ? "Creating account..." : "Register"}
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-export default Login;
+}

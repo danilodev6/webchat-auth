@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { login } from "../services/api";
 
-export default function Login() {
+interface LoginProps {
+  onSuccess?: () => void;
+}
+
+export default function Login({ onSuccess }: LoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -13,8 +17,8 @@ export default function Login() {
 
     try {
       await login(email, password);
-      // Redirect here <------------------- TODO
       console.log("Login successful!");
+      onSuccess?.();
     } catch (err: any) {
       setError(err.message);
     } finally {

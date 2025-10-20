@@ -4,36 +4,33 @@ import { Server } from "socket.io";
 import logger from "morgan";
 import "dotenv/config";
 import cors from "cors";
-import authRoutes from "./routes/auth";
+import authRoutes from "./routes/auth.ts";
+import cookieParser from "cookie-parser";
+import { sessionMiddleware } from "./middleware/auth.ts";
 
 export function startServer() {
   const port = process.env.PORT || 3000;
   const app = express();
 
-  app.use(cors);
+  app.use(cors({ origin: "http://localhost:5173", credentials: true }));
   app.use(logger("dev"));
   app.use(express.json());
+  app.use(cookieParser());
+  app.use(sessionMiddleware);
+
   app.use("/api/auth", authRoutes);
+
+  // --- Getting current user ---
+  app.get("/api/auth/me", (req, res) => {
+    if (!req.session?.user) {
+      return res.status(401).json({ user: null });
+    }
+    res.json({ user: req.session.user });
+  });
 
   // --- Routes ---
   app.get("/", (req, res) => {
     res.sendFile(new URL("../../client/index.html", import.meta.url).pathname);
-  });
-
-  app.post("/login", (req, res) => {
-    res.send("Login endpoint");
-  });
-
-  app.post("/register", async (req, res) => {
-    res.send("Register endpoint");
-  });
-
-  app.post("/logout", (req, res) => {
-    res.send("Logout endpoint");
-  });
-
-  app.get("/messages", (req, res) => {
-    res.send("Get messages endpoint");
   });
 
   // --- HTTP + WebSocket server ---
@@ -50,3 +47,12 @@ export function startServer() {
     console.log(`🚀 Server running at http://localhost:${port}`);
   });
 }
+
+// export interface JwtPayload {
+//   id: string;
+//   email: string;
+// }
+//
+// export interface SessionData {
+//   user: JwtPayload | null;
+// }

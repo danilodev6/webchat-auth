@@ -5,7 +5,7 @@ import { db } from "../db/connection.ts";
 import { loginSchema, registerSchema } from "../schemas";
 
 const router = Router();
-const JWT_SECRET = process.env.JWT_SECRET || "change-this-secret";
+const JWT_SECRET = process.env.JWT_SECRET || "testing-secret";
 
 // Register
 router.post("/register", async (req, res) => {
@@ -28,7 +28,7 @@ router.post("/register", async (req, res) => {
 
     // Create user
     const result = await db.execute({
-      sql: "INSERT INTO users (email, password) VALUES (?, ?, ?) RETURNING id, email",
+      sql: "INSERT INTO users (email, password) VALUES (?, ?) RETURNING id, email",
       args: [email, hashedPassword],
     });
 
@@ -72,15 +72,28 @@ router.post("/login", async (req, res) => {
     }
 
     // Generate token
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "7d" });
+
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.json({
       token,
-      user: { id: user.id, name: user.name, email: user.email },
+      user: { id: user.id, email: user.email },
     });
   } catch (error: any) {
     res.status(400).json({ message: error.message || "Login failed" });
   }
+});
+
+// Logout
+router.post("/logout", (req, res) => {
+  res.clearCookie("access_token");
+  res.json({ message: "Logged out successfully" });
 });
 
 export default router;
