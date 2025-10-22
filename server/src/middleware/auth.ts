@@ -1,3 +1,4 @@
+// server/src/middleware/auth.ts
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import type { JwtPayload, SessionData } from "../types/session.ts";
@@ -9,8 +10,14 @@ declare module "express-serve-static-core" {
 }
 
 export function sessionMiddleware(req: Request, res: Response, next: NextFunction) {
-  const token = req.cookies?.access_token;
   req.session = { user: null };
+
+  const token = req.cookies?.access_token;
+
+  // Early return if no token - DON'T try to verify
+  if (!token) {
+    return next();
+  }
 
   const secret = process.env.JWT_SECRET;
   if (!secret) {
@@ -22,8 +29,9 @@ export function sessionMiddleware(req: Request, res: Response, next: NextFunctio
     const decoded = jwt.verify(token, secret) as JwtPayload;
     req.session.user = { id: decoded.id, email: decoded.email };
   } catch (err) {
-    console.error("Invalid or expired token:", err);
+    console.error("Token verification failed:", err instanceof Error ? err.message : err);
   }
+
   next();
 }
 
