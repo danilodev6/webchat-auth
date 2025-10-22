@@ -2,10 +2,18 @@ import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { db } from "../db/connection.ts";
-import { loginSchema, registerSchema } from "../schemas";
+import { loginSchema, registerSchema } from "../schemas.ts";
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || "testing-secret";
+
+// Me
+router.get("/me", (req, res) => {
+  if (!req.session?.user) {
+    return res.status(401).json({ user: null });
+  }
+  res.json({ user: req.session.user });
+});
 
 // Register
 router.post("/register", async (req, res) => {

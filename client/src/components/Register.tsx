@@ -17,8 +17,10 @@ export default function Register({ onSuccess }: LoginProps) {
 
     try {
       await register(email, password);
+      onSuccess?.();
       console.log("Registration successful!");
-      // TODO: Redirect or update UI
+      setEmail("");
+      setPassword("");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -28,7 +30,7 @@ export default function Register({ onSuccess }: LoginProps) {
 
   return (
     <div className="flex items-center justify-center text-left">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <div className="bg-white text-black p-8 rounded-lg shadow-md w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Register</h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">{error}</div>}

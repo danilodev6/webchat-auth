@@ -20,14 +20,6 @@ export function startServer() {
 
   app.use("/api/auth", authRoutes);
 
-  // --- Getting current user ---
-  app.get("/api/auth/me", (req, res) => {
-    if (!req.session?.user) {
-      return res.status(401).json({ user: null });
-    }
-    res.json({ user: req.session.user });
-  });
-
   // --- Routes ---
   app.get("/", (req, res) => {
     res.sendFile(new URL("../../client/index.html", import.meta.url).pathname);

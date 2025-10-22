@@ -4,6 +4,9 @@ import Login from "./components/Login.tsx";
 import Register from "./components/Register.tsx";
 import { getCurrentUser, logout } from "./services/api.ts";
 import type { JwtPayload } from "../../server/src/types/session.ts";
+import Home from "./pages/Home.tsx";
+import Chat from "./pages/Chat.tsx";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 
 function App() {
   const [user, setUser] = useState<JwtPayload | null>(null);
@@ -42,12 +45,18 @@ function App() {
   }
 
   return (
-    <div className="p-8">
-      <h1>Welcome, {user.email}!</h1>
-      <button onClick={handleLogout} className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">
-        Logout
-      </button>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        {/* Home page - login/register */}
+        <Route path="/" element={user ? <Navigate to="/chat" replace /> : <Home onAuthSuccess={handleAuthSuccess} />} />
+
+        {/* Chat page - protected route */}
+        <Route
+          path="/chat"
+          element={user ? <Chat user={user} onLogout={handleLogout} /> : <Navigate to="/" replace />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
