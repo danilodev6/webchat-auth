@@ -11,14 +11,17 @@ export default function Login({ onSuccess }: LoginProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     setError("");
 
     try {
       await login(email, password);
-      console.log("Login successful!");
       onSuccess?.();
+      console.log("Login successful!");
+      setEmail("");
+      setPassword("");
     } catch (err: any) {
       setError(err.message);
     } finally {
@@ -27,17 +30,19 @@ export default function Login({ onSuccess }: LoginProps) {
   };
 
   return (
-    <div className="flex items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md text-black">
+    <div className="bg-white text-black p-8 rounded-lg shadow-md w-full max-w-md">
+      <div className="bg-white text-black p-8 rounded-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Login</h2>
 
         {error && <div className="mb-4 p-3 bg-red-100 text-red-700 rounded text-sm">{error}</div>}
 
-        <div className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
               type="email"
+              required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
@@ -45,10 +50,13 @@ export default function Login({ onSuccess }: LoginProps) {
             />
           </div>
 
+          {/* Password */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
               type="password"
+              required
+              minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
@@ -56,14 +64,15 @@ export default function Login({ onSuccess }: LoginProps) {
             />
           </div>
 
+          {/* Submit */}
           <button
-            onClick={handleSubmit}
+            type="submit"
             disabled={loading}
-            className="w-full !bg-blue-600 text-white py-2 rounded-md hover:!bg-blue-700 disabled:opacity-50"
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 font-medium disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
-        </div>
+        </form>
       </div>
     </div>
   );
