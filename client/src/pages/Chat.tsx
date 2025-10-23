@@ -77,6 +77,7 @@ export default function Chat({ user, onLogout }: ChatPageProps) {
     await logout();
     socket?.close();
     onLogout();
+    console.log("Logout successful!");
   };
 
   return (
