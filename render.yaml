@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: webchat-backend
+    env: node
+    plan: free
+    buildCommand: "cd server && bun install"
+    startCommand: "cd server && bun run index.ts"
+    rootDir: server
+    autoDeploy: true
+
+  - type: static
+    name: webchat-frontend
+    env: static
+    buildCommand: "cd client && bun install && bun run build"
+    publishPath: "client/dist"
+    rootDir: client
+    autoDeploy: true
