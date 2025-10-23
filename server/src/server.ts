@@ -1,12 +1,12 @@
 import express from "express";
-import { createServer } from "node:http";
-import { Server } from "socket.io";
 import logger from "morgan";
 import "dotenv/config";
 import cors from "cors";
 import authRoutes from "./routes/auth.ts";
 import cookieParser from "cookie-parser";
+import { createServer } from "http";
 import { sessionMiddleware } from "./middleware/auth.ts";
+import { StartSocketServer } from "./socket/index.ts";
 
 export function startServer() {
   const port = process.env.PORT || 3000;
@@ -20,18 +20,12 @@ export function startServer() {
 
   app.use("/api/auth", authRoutes);
 
+  const server = createServer(app);
+  StartSocketServer(server);
+
   // --- Routes ---
   app.get("/", (req, res) => {
     res.sendFile(new URL("../../client/index.html", import.meta.url).pathname);
-  });
-
-  // --- HTTP + WebSocket server ---
-  const server = createServer(app);
-  const io = new Server(server);
-
-  io.on("connection", (socket) => {
-    console.log("a user connected");
-    socket.on("disconnect", () => console.log("user disconnected"));
   });
 
   // --- Start ---

@@ -18,10 +18,8 @@ router.get("/me", (req, res) => {
 // Register
 router.post("/register", async (req, res) => {
   try {
-    // Validate
     const { email, password } = registerSchema.parse(req.body);
 
-    // Check if user exists
     const existing = await db.execute({
       sql: "SELECT id FROM users WHERE email = ?",
       args: [email],
@@ -31,10 +29,8 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
     const result = await db.execute({
       sql: "INSERT INTO users (email, password) VALUES (?, ?) RETURNING id, email",
       args: [email, hashedPassword],
@@ -42,11 +38,16 @@ router.post("/register", async (req, res) => {
 
     const user = result.rows[0];
 
-    // Generate token
-    const token = jwt.sign({ userId: user?.id }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user?.id, email: user?.email }, JWT_SECRET, { expiresIn: "7d" });
+
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.status(201).json({
-      token,
       user: { id: user?.id, email: user?.email },
     });
   } catch (error: any) {
@@ -57,10 +58,8 @@ router.post("/register", async (req, res) => {
 // Login
 router.post("/login", async (req, res) => {
   try {
-    // Validate
     const { email, password } = loginSchema.parse(req.body);
 
-    // Find user
     const result = await db.execute({
       sql: "SELECT * FROM users WHERE email = ?",
       args: [email],
@@ -72,25 +71,22 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Check password
     const isValid = await bcrypt.compare(password, user.password as string);
 
     if (!isValid) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Generate token
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: "7d" });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
 
     res.cookie("access_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: "lax", // Changed from "strict" to "lax" for better compatibility
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     res.json({
-      token,
       user: { id: user.id, email: user.email },
     });
   } catch (error: any) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { logout } from "../services/api";
 
@@ -7,22 +7,36 @@ interface ChatPageProps {
   onLogout: () => void;
 }
 
+interface Message {
+  email: string;
+  text: string;
+}
+
 export default function Chat({ user, onLogout }: ChatPageProps) {
   const [socket, setSocket] = useState<any>(null);
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
 
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
-    // Connect to socket.io server
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  useEffect(() => {
     const newSocket = io("http://localhost:3000", {
-      auth: { userId: user.id },
+      auth: {
+        userId: user.id,
+        email: user.email,
+      },
     });
 
     newSocket.on("connect", () => {
       console.log("Connected to chat server");
     });
 
-    newSocket.on("message", (msg: string) => {
+    newSocket.on("message", (msg: Message) => {
+      console.log("Received message:", msg);
       setMessages((prev) => [...prev, msg]);
     });
 
@@ -31,7 +45,14 @@ export default function Chat({ user, onLogout }: ChatPageProps) {
     return () => {
       newSocket.close();
     };
-  }, [user.id]);
+  }, [user.id, user.email]);
+
+  const sendMessageEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      socket.emit("message", input);
+      setInput("");
+    }
+  };
 
   const sendMessage = () => {
     if (socket && input.trim()) {
@@ -47,11 +68,10 @@ export default function Chat({ user, onLogout }: ChatPageProps) {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-8xl mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-black">Chat Room</h1>
+        <h1 className="text-2xl font-bold text-black mr-40">Chat Room</h1>
         <div className="flex items-center gap-4">
-          <span className="text-gray-600">{user.email}</span>
           <button onClick={handleLogout} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
             Logout
           </button>
@@ -59,22 +79,28 @@ export default function Chat({ user, onLogout }: ChatPageProps) {
       </div>
 
       {/* Chat messages */}
-      <div className="bg-white rounded-lg shadow-md p-4 h-96 overflow-y-auto mb-4">
+      <div className="text-left  bg-white rounded-lg shadow-md p-4 h-96 overflow-y-auto mb-4">
         {messages.length === 0 ? (
-          <p className="text-black text-center">No messages yet...</p>
+          <p className="text-gray-400 text-center">No messages yet...</p>
         ) : (
-          messages.map((msg, i) => (
-            <div key={i} className="mb-2 p-2 bg-white rounded">
-              {msg}
-            </div>
-          ))
+          <ul className="space-y-3">
+            {messages.map((msg, i) => (
+              <li key={i} className="border-b border-sky-400">
+                <p className="text-gray-800 ">{msg.email}</p>
+                <p className="text-black">{msg.text}</p>
+              </li>
+            ))}
+          </ul>
         )}
+        {/* Div for scrolling to the latest message */}
+        <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
       <div className="flex gap-2 text-black">
         <input
           type="text"
+          onKeyDown={sendMessageEnter}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
