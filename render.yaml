@@ -8,10 +8,11 @@ services:
     rootDir: server
     autoDeploy: true
 
-  - type: static
+  - type: web
     name: webchat-frontend
-    env: static
+    env: node
+    plan: free
     buildCommand: "cd client && bun install && bun run build"
-    publishPath: "client/dist"
+    startCommand: "cd client && npx serve -s dist -l $PORT"
     rootDir: client
     autoDeploy: true
