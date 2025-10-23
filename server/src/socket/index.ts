@@ -7,7 +7,7 @@ import { setupChatHandlers } from "./handlers/chat.ts";
 export function StartSocketServer(server: httpServer) {
   const io = new Server(server, {
     cors: {
-      origin: "http://localhost:5173",
+      origin: ["http://localhost:5173", "https://webchat-frontend-96ns.onrender.com"],
       credentials: true,
     },
   });

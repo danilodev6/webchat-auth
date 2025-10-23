@@ -12,7 +12,7 @@ export function startServer() {
   const port = process.env.PORT || 3000;
   const app = express();
 
-  app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+  app.use(cors({ origin: ["http://localhost:5173", "https://webchat-frontend-96ns.onrender.com"], credentials: true }));
   app.use(logger("dev"));
   app.use(express.json());
   app.use(cookieParser());
