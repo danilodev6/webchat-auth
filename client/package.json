@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "bunx vite build",
-    "preview": "bunx vite preview"
+    "build": "node_modules/.bin/vite build",
+    "preview": "node_modules/.bin/vite preview"
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.14",
