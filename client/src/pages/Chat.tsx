@@ -26,7 +26,7 @@ export default function Chat({ user, onLogout }: ChatPageProps) {
   }, [messages]);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000", {
+    const newSocket = io("https://webchat-backend-d7v2.onrender.com", {
       auth: {
         userId: user.id,
         email: user.email,
