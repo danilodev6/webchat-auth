@@ -7,6 +7,9 @@
     "client",
     "server"
   ],
+  "scripts": {
+    "build": "cd client && bun run build && cd ../server && bun run start"
+  },
   "devDependencies": {
     "@types/bun": "latest"
   },
