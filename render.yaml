@@ -12,7 +12,7 @@ services:
     name: webchat-frontend
     env: node
     plan: free
-    buildCommand: "bun install && bun run build"
-    startCommand: "bunx serve -s dist -l $PORT"
+    buildCommand: "npm install && npm run build"
+    startCommand: "npx serve -s dist -l $PORT"
     rootDir: client
     autoDeploy: true
