@@ -10,6 +10,8 @@ interface ChatPageProps {
 interface Message {
   email: string;
   text: string;
+  content?: string;
+  created_at?: string;
 }
 
 export default function Chat({ user, onLogout }: ChatPageProps) {
@@ -33,6 +35,16 @@ export default function Chat({ user, onLogout }: ChatPageProps) {
 
     newSocket.on("connect", () => {
       console.log("Connected to chat server");
+    });
+
+    newSocket.on("previous-messages", (previousMessages: Message[]) => {
+      console.log("Loaded previous messages:", previousMessages.length);
+      const normalized = previousMessages.map((msg) => ({
+        email: msg.email,
+        text: msg.content || msg.text,
+        created_at: msg.created_at,
+      }));
+      setMessages(normalized);
     });
 
     newSocket.on("message", (msg: Message) => {
