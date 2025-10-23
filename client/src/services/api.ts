@@ -12,7 +12,6 @@ export async function login(email: string, password: string) {
 
   if (!res.ok) throw new Error(data.message);
 
-  localStorage.setItem("token", data.token);
   return data;
 }
 
@@ -28,7 +27,6 @@ export async function register(email: string, password: string) {
 
   if (!res.ok) throw new Error(data.message);
 
-  localStorage.setItem("token", data.token);
   return data;
 }
 

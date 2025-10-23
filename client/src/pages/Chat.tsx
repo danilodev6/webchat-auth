@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { logout } from "../services/api";
+import { logout } from "../services/api.ts";
 
 interface ChatPageProps {
   user: { id: string; email: string };
@@ -70,9 +70,9 @@ export default function Chat({ user, onLogout }: ChatPageProps) {
   return (
     <div className="max-w-8xl mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-black mr-40">Chat Room</h1>
+        <h1 className="text-2xl font-bold text-white mr-40">Chat Room</h1>
         <div className="flex items-center gap-4">
-          <button onClick={handleLogout} className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+          <button onClick={handleLogout} className="px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-700">
             Logout
           </button>
         </div>
@@ -104,9 +104,9 @@ export default function Chat({ user, onLogout }: ChatPageProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 px-4 py-2 border border-black bg-white rounded-md focus:ring-2 focus:ring-blue-500"
+          className="flex-1 px-4 py-2 border border-black bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-[#662249]"
         />
-        <button onClick={sendMessage} className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+        <button onClick={sendMessage} className="px-6 py-2 bg-[#44174E] text-white rounded-md hover:bg-[#662249]">
           Send
         </button>
       </div>

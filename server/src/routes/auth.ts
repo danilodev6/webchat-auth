@@ -1,7 +1,7 @@
 import { Router } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { db } from "../db/connection.ts";
+import { db } from "../db/init-db.ts";
 import { loginSchema, registerSchema } from "../schemas.ts";
 
 const router = Router();

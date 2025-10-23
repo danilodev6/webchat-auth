@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { login } from "../services/api";
+import { login } from "../services/api.ts";
 
 interface LoginProps {
   onSuccess?: () => void;
@@ -45,7 +45,7 @@ export default function Login({ onSuccess }: LoginProps) {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#662249]"
               placeholder="you@example.com"
             />
           </div>
@@ -59,7 +59,7 @@ export default function Login({ onSuccess }: LoginProps) {
               minLength={8}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#662249]"
               placeholder="••••••••"
             />
           </div>
@@ -68,7 +68,7 @@ export default function Login({ onSuccess }: LoginProps) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 font-medium disabled:opacity-50"
+            className="w-full bg-[#44174E] text-white py-2 rounded-md hover:bg-[#662249] font-medium disabled:opacity-50"
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
