@@ -39,7 +39,7 @@ Una aplicación de chat en tiempo real con autenticación completa, construida c
 - Node.js 22.16.0 o superior
 - Bun 1.2.20 o superior (opcional, para desarrollo local)
 - SQL 
-- npm o yarn
+- yarn o npm
 
 ## 🚀 Instalación Local
 
